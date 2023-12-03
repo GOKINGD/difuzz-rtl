@@ -123,6 +123,7 @@ def Run(dut, toplevel,
                 cNum += 1
                 mutator.add_corpus(sim_input)
                 last_coverage = coverage
+                debug_print('[DifuzzRTL] Iteration [{}],time is {}, coverage is {}'.format(it,time.time() - start_time,coverage),True)
 
             mutator.update_phase(it)
 
