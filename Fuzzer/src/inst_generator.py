@@ -3,6 +3,7 @@ import random
 
 from riscv_definitions import *
 from word import *
+from src.utils import *
 
 """ rvInstGenerator
 Generates syntactically, semantically desirable unit of instructions
@@ -177,40 +178,101 @@ class rvInstGenerator():
 
         tpe = NONE
         insts = [ syntax ]
-
         for (key, tup) in opcodes_words.items():
             key_opcodes = tup[0]
             key_word = tup[1]
             if opcode in key_opcodes:
                 (tpe, insts) = key_word(opcode, syntax, xregs, fregs, imms, symbols)
                 break
-
-        word = Word(label_num, insts, tpe, xregs, fregs, imms, symbols)
-
+        tpe_list = [tpe] * len(insts)
+        xregs_list = []
+        fregs_list = []
+        imms_list = []
+        symbols_list = []
+        for i in range(len(insts)):
+            xregs_list.append(xregs)
+            fregs_list.append(fregs)
+            imms_list.append(imms)
+            symbols_list.append(symbols)
+        if part == MAIN:
+            cnt = 30
+            while cnt:
+                flag = 0
+                opcode = random.choice(self.opcodes)
+                (xsyntax, xxregs, xfregs, ximms, xsymbols) = self.opcodes_map.get(opcode)
+                xxregs_list = list(xxregs)
+                xfregs_list = list(xfregs)
+                ximms_list = list(ximms)
+                xsymbols_list = list(xsymbols)
+                for (key, tup) in opcodes_words.items():
+                    key_opcodes = tup[0]
+                    key_word = tup[1]
+                    if opcode in key_opcodes:
+                        (tpe, xinst) = key_word(opcode, xsyntax, xxregs_list, xfregs_list, ximms_list, xsymbols_list)
+                        insts += xinst
+                        tpe_list += [tpe] * len(xinst)
+                        for i in range(len(xinst)):
+                            xregs_list.append(xxregs_list)
+                            fregs_list.append(xfregs_list)
+                            imms_list.append(ximms_list)
+                            symbols_list.append(xsymbols_list)
+                        flag = 1
+                        break
+                if flag == 0:
+                    insts.append(xsyntax)
+                    xregs_list.append(xxregs_list)
+                    fregs_list.append(xfregs_list)
+                    imms_list.append(ximms_list)
+                    symbols_list.append(xsymbols_list)
+                    tpe_list += [NONE]
+                cnt -= 1
+            # print(len(tpe_list))
+            # print("****{}".format(len(insts)))
+            # print("&&&&{}".format(len(xregs_list)))
+            # print("((((())))){}".format(len(insts)))
+            # print(len(xregs_list))
+            # print(len(fregs_list))
+            # print(len(imms_list))
+            # print(len(symbols_list))
+        word = Word(label_num, insts, tpe, xregs_list, fregs_list, imms_list, symbols_list, tpe_list)
         return word
 
     def populate_word(self, word: Word, max_label: int, part: str):
         if word.populated:
             return
-
         region = (0, 31)
         if part == PREFIX:
             region = (10, 15)
-        opvals = {}
 
-        for xreg in word.xregs:
-            if word.tpe == NONE:
-                opvals[xreg] = self._get_xregs()
-            else:
-                opvals[xreg] = self._get_xregs(region, True)
+        if part == MAIN:
+            opvals = [{} for i in range(len(word.tpe_list))]
+            for i in range(len(word.tpe_list)):
+                for xreg in word.xregs_list[i]:
+                    if word.tpe_list[i] == NONE:
+                        opvals[i][xreg] = self._get_xregs()
+                    else:
+                        opvals[i][xreg] = self._get_xregs(region, True)
+                for freg in word.fregs_list[i]:
+                    opvals[i][freg] = self._get_fregs()
+                for (imm, align) in word.imms_list[i]:
+                    opvals[i][imm] = self._get_imm(imm, align)
+                for symbol in word.symbols_list[i]:
+                    opvals[i][symbol] = self._get_symbol(word.tpe_list[i], word.label, max_label, part)            
+        else:
+            opvals = {}
+            for i in range(len(word.tpe_list)):
+                for xreg in word.xregs_list[0]:
+                    if word.tpe_list[0] == NONE:
+                        opvals[xreg] = self._get_xregs()
+                    else:
+                        opvals[xreg] = self._get_xregs(region, True)
 
-        for freg in word.fregs:
-            opvals[freg] = self._get_fregs()
+                for freg in word.fregs_list[0]:
+                    opvals[freg] = self._get_fregs()
 
-        for (imm, align) in word.imms:
-            opvals[imm] = self._get_imm(imm, align)
+                for (imm, align) in word.imms_list[0]:
+                    opvals[imm] = self._get_imm(imm, align)
 
-        for symbol in word.symbols:
-            opvals[symbol] = self._get_symbol(word.tpe, word.label, max_label, part)
-
+                for symbol in word.symbols_list[0]:
+                    opvals[symbol] = self._get_symbol(word.tpe, word.label, max_label, part)
         word.populate(opvals, part)

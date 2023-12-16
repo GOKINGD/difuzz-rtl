@@ -16,43 +16,61 @@ MAIN   = '_l'
 SUFFIX = '_s'
 
 class Word():
-    def __init__(self, label: int, insts: list, tpe=NONE, xregs=[], fregs=[], imms=[], symbols=[], populated=False):
+    def __init__(self, label: int, insts: list, tpe=NONE, xregs_list=[], fregs_list=[], imms_list=[], symbols_list=[], tpe_list = [], populated=False):
         self.label = label
         self.tpe = tpe
         self.insts = insts
         self.len_insts = len(insts)
 
-        self.xregs = xregs
-        self.fregs = fregs
-        self.imms = imms
-        self.symbols = symbols
-        self.operands = xregs + fregs + [ imm[0] for imm in imms ] + symbols
+        self.xregs_list = xregs_list
+        self.fregs_list = fregs_list
+        self.imms_list = imms_list
+        self.symbols_list = symbols_list
+        self.operands = [[] for i in range(len(self.xregs_list))]
+        for i in range(len(self.xregs_list)):
+            self.operands[i] += xregs_list[i] + fregs_list[i] + [ imm[0] for imm in imms_list[i] ] + symbols_list[i]
 
         self.populated = populated
         self.ret_insts = []
 
+        self.tpe_list = tpe_list
     def pop_inst(self, inst, opvals):
         for (op, val) in opvals.items():
             inst = inst.replace(op, val)
+            print(inst,op,val)
 
         return inst
 
     def populate(self, opvals, part=MAIN):
-        for op in self.operands:
-            assert op in opvals.keys(), \
-                '{} is not in label {} Word opvals'.format(op, self.label)
-
+        if part != MAIN:
+            for op in self.operands[0]:
+                assert op in opvals.keys(), \
+                    '{} is not in label {} Word opvals'.format(op, self.label)
+        else:
+            ct = 0
+            for operand in self.operands:
+                for op in operand:
+                    assert op in opvals[ct].keys(), \
+                        '{} is not in label {} Word opvals'.format(op, self.label)
+                ct += 1
         pop_insts = []
-        for inst in self.insts:
-            p_inst = self.pop_inst(inst, opvals)
-            pop_insts.append(p_inst)
+        if part != MAIN:
+            for inst in self.insts:
+                p_inst = self.pop_inst(inst, opvals)
+                pop_insts.append(p_inst)
+        else:
+            cnt = 0
+            for inst in self.insts:
+                p_inst = self.pop_inst(inst, opvals[cnt])
+                pop_insts.append(p_inst)
+                cnt += 1
 
         ret_insts = [ '{:<8}{:<42}'.format(part + str(self.label) + ':',
                                            pop_insts.pop(0)) ]
-
+        
         for i in range(len(pop_insts)):
             ret_insts.append('{:8}{:<42}'.format('', pop_insts.pop(0)))
-
+            
         self.populated = True
         self.ret_insts = ret_insts
 

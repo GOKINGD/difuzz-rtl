@@ -95,23 +95,32 @@ class rvPreProcessor():
                 ints.append(0)
             else:
                 ints.append(INT)
-
+        #sim_input is .input_0.si
         sim_input.save(si_name, data)
-
+        # input insts in test_template
         fd = open(test_template, 'r')
         template_lines = fd.readlines()
         fd.close()
 
         assembly = []
+        label_num = 0
+        # for inst in insts:
+        #     if inst[:2] == "_l":
+        #         label_num += 1
+
+        #print(label_num)
         for line in template_lines:
             assembly.append(line)
             if '_fuzz_prefix:' in line:
                 for inst in prefix_insts:
                     assembly.append(inst + ';\n')
-
+                #assembly.append("\t" + "jal _end_main"+ "\t\t\t\t" + ';\n')
             if '_fuzz_main:' in line:
                 for inst in insts:
                     assembly.append(inst + ';\n')
+                    # randint = random.randint(0,3)
+                    # if randint == 0:
+                    #     assembly.append("\t" + "jal _l{}".format(random.randint(0,label_num-1)) + "\t\t\t\t" + ';\n')
 
             if '_fuzz_suffix:' in line:
                 for inst in suffix_insts:
@@ -134,7 +143,7 @@ class rvPreProcessor():
         fd = open(asm_name, 'w')
         fd.writelines(assembly)
         fd.close()
-
+        #input insts in test_template end
         cc_args = self.cc_args + extra_args + [ asm_name, '-o', elf_name ]
 
         cc_ret = -1

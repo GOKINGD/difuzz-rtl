@@ -75,9 +75,11 @@ class simInput():
 
     def get_insts(self):
         insts = []
+        #randint = random.randint(0,3)
         for word in self.words:
             insts += word.get_insts()
-
+        #    if randint == 0:
+        #        insts += ["jal 0,_l{} 0000".format(random.randint(0,self.num_words))]
         insts.append(MAIN + '{}:'.format(self.num_words))
         return insts
 
