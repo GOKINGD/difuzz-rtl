@@ -147,13 +147,18 @@ class rvMutator():
 
     def tuples_to_words(self, tuples, part):
         words = []
-
         for tup in tuples:
             label = tup[0]
             insts = tup[1]
-
-            word = Word(label, insts)
-            word.populate({}, part)
+            if part != MAIN:
+                word = Word(label, insts, in_file = True)
+            else:
+                word = Word(label, insts)
+            if part == MAIN:
+                opv = [{} for i in range(len(insts))]
+                word.populate(opv, part)
+            else:
+                word.populate({}, part)
 
             words.append(word)
 
@@ -207,6 +212,7 @@ class rvMutator():
                 num_tmp = num_word
                
                 tmp_tuples[num_tmp - 1][1].append(line[8:50])
+                
             elif line[:2] == SUFFIX:
                 part = SUFFIX
                 num_suffix += 1

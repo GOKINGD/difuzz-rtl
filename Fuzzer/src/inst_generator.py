@@ -195,8 +195,8 @@ class rvInstGenerator():
             imms_list.append(imms)
             symbols_list.append(symbols)
         if part == MAIN:
-            cnt = 30
-            while cnt:
+            cnt = 30 - len(insts)
+            while cnt > 0:
                 flag = 0
                 opcode = random.choice(self.opcodes)
                 (xsyntax, xxregs, xfregs, ximms, xsymbols) = self.opcodes_map.get(opcode)
@@ -217,6 +217,7 @@ class rvInstGenerator():
                             imms_list.append(ximms_list)
                             symbols_list.append(xsymbols_list)
                         flag = 1
+                        cnt -= (len(xinst)-1)
                         break
                 if flag == 0:
                     insts.append(xsyntax)

@@ -30,7 +30,7 @@ rv32i_rtype = {
 }
 
 rv32i_itype = {
-    'jalr'  : ('jalr xreg0, 0(xreg1)' , ('xreg0', 'xreg1',), (), (), ()),
+    #'jalr'  : ('jalr xreg0, 0(xreg1)' , ('xreg0', 'xreg1',), (), (), ()),
     'lb'    : ('lb xreg0, imm6(xreg1)'   , ('xreg0', 'xreg1',), (), (('imm6', 1),), ()),
     'lh'    : ('lh xreg0, imm6(xreg1)'   , ('xreg0', 'xreg1',), (), (('imm6', 2),), ()),
     'lw'    : ('lw xreg0, imm6(xreg1)'   , ('xreg0', 'xreg1',), (), (('imm6', 4),), ()),
@@ -57,12 +57,12 @@ rv32i_stype = {
 }
 
 rv32i_btype = {
-    'beq' : ('beq xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
-    'bne' : ('bne xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
-    'blt' : ('blt xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
-    'bge' : ('bge xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
-    'bltu': ('bltu xreg0, xreg1, symbol', ('xreg0', 'xreg1',), (), (), ('symbol',)),
-    'bgeu': ('bgeu xreg0, xreg1, symbol', ('xreg0', 'xreg1',), (), (), ('symbol',))
+    # 'beq' : ('beq xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
+    # 'bne' : ('bne xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
+    # 'blt' : ('blt xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
+    # 'bge' : ('bge xreg0, xreg1, symbol' , ('xreg0', 'xreg1',), (), (), ('symbol',)),
+    # 'bltu': ('bltu xreg0, xreg1, symbol', ('xreg0', 'xreg1',), (), (), ('symbol',)),
+    # 'bgeu': ('bgeu xreg0, xreg1, symbol', ('xreg0', 'xreg1',), (), (), ('symbol',))
 }
 
 rv32i_utype = {
@@ -71,7 +71,7 @@ rv32i_utype = {
 }
 
 rv32i_jtype = {
-    'jal': ('jal xreg0, symbol', ('xreg0',), (), (), ('symbol',))
+    #'jal': ('jal xreg0, symbol', ('xreg0',), (), (), ('symbol',))
 }
 
 rv32i_rtype = {

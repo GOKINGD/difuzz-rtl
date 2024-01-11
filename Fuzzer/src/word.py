@@ -16,7 +16,7 @@ MAIN   = '_l'
 SUFFIX = '_s'
 
 class Word():
-    def __init__(self, label: int, insts: list, tpe=NONE, xregs_list=[], fregs_list=[], imms_list=[], symbols_list=[], tpe_list = [], populated=False):
+    def __init__(self, label: int, insts: list, tpe=NONE, xregs_list=[], fregs_list=[], imms_list=[], symbols_list=[], tpe_list = [], populated=False, in_file = False):
         self.label = label
         self.tpe = tpe
         self.insts = insts
@@ -27,6 +27,8 @@ class Word():
         self.imms_list = imms_list
         self.symbols_list = symbols_list
         self.operands = [[] for i in range(len(self.xregs_list))]
+        if in_file:
+            self.operands = [[] for i in range(2)]
         for i in range(len(self.xregs_list)):
             self.operands[i] += xregs_list[i] + fregs_list[i] + [ imm[0] for imm in imms_list[i] ] + symbols_list[i]
 
@@ -37,11 +39,9 @@ class Word():
     def pop_inst(self, inst, opvals):
         for (op, val) in opvals.items():
             inst = inst.replace(op, val)
-            print(inst,op,val)
-
         return inst
 
-    def populate(self, opvals, part=MAIN):
+    def populate(self, opvals, part=MAIN, in_file = False):
         if part != MAIN:
             for op in self.operands[0]:
                 assert op in opvals.keys(), \

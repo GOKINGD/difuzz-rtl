@@ -165,6 +165,7 @@ class rvPreProcessor():
                 for i, INT in enumerate(ints):
                     if INT:
                         fd.write('{:016x}:{:04b}\n'.format(fuzz_main + 4 * i, INT))
+                        #print('{:016x}:{:04b}\n'.format(fuzz_main + 4 * i, INT))
                 fd.close()
 
             max_cycles = 6000
