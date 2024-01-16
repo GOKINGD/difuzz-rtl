@@ -54,7 +54,7 @@ class rvPreProcessor():
         fd.write('{:016x}:{:04b}\n'.format(epc, val))
         fd.close()
 
-    def process(self, sim_input: simInput, data: list, intr: bool, num_data_sections=6):
+    def process(self, sim_input: simInput, data: list, intr: bool, num_iter, in_file = None, num_data_sections=6):
         section_size = len(data) // num_data_sections
 
         assert data, 'Empty data can not be processed'
@@ -73,9 +73,12 @@ class rvPreProcessor():
                                    '-I', '{}/include/v'.format(self.template),
                                    '{}/include/v/string.c'.format(self.template),
                                    '{}/include/v/vm.c'.format(self.template) ]
-
-        si_name = self.base + '/.input_{}.si'.format(self.proc_num)
-        asm_name = self.base + '/.input_{}.S'.format(self.proc_num)
+        if in_file:
+            si_name = self.base + '/si' + '/.input_in_file.si'
+        else:
+            si_name = self.base + '/si' + '/.input_{}.si'.format(num_iter)
+        asm_name = self.base + '/asm_find_bug' + '/.input_{}.S'.format(num_iter)
+        asm_name_org = self.base + '/.input_{}.S'.format(self.proc_num)
         elf_name = self.base + '/.input_{}.elf'.format(self.proc_num)
         hex_name = self.base + '/.input_{}.hex'.format(self.proc_num)
         sym_name = self.base + '/.input_{}.symbols'.format(self.proc_num)
@@ -141,6 +144,9 @@ class rvPreProcessor():
                                         format(label, data[i], data[i+1]))
 
         fd = open(asm_name, 'w')
+        fd.writelines(assembly)
+        fd.close()
+        fd = open(asm_name_org, 'w')
         fd.writelines(assembly)
         fd.close()
         #input insts in test_template end

@@ -51,6 +51,7 @@ parser.add_option('debug', 0, 'Debugging?')
 parser.add_option('minimize', 0, 'Minimizing?')
 parser.add_option('prob_intr', 0, 'Probability of asserting interrupt')
 parser.add_option('no_guide', 0, 'Only random testing?')
+parser.add_option("find_bug",0,'find_bug?')
 
 parser.print_help()
 parser.parse_option()
