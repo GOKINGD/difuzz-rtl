@@ -180,12 +180,13 @@ def Run(dut, toplevel,
                             if word_L_cnt > word_cnt:
                                 asss = "\t\t\tnop"
             assembly = ass + assemb + ass_end
-            fd = open('/home/host/difuzz-rtl/Fuzzer/outdir/asm_find_bug/bug_{}.si'.format(i),'w')
+            fd = open('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i),'w')
+            print('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i))
             for j in range(len(assembly)):
                 fd.write(assembly[j])
             fd.close()
 
-            in_file = '/home/host/difuzz-rtl/Fuzzer/outdir/asm_find_bug/bug_{}.si'.format(i)
+            in_file = '/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i)
             if in_file: (sim_input, data, assert_intr) = mutator.read_siminput(in_file)
             else: (sim_input, data) = mutator.get(assert_intr)
 
