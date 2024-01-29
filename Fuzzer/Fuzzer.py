@@ -85,11 +85,11 @@ def Run(dut, toplevel,
                 match = checker.check(symbols)
             elif ret == ILL_MEM:
                 match = True
-                debug_print('[DifuzzRTL] Memory access outside DRAM -- {}'. \
-                            format(iNum), debug, True)
-                if record:
-                    save_mismatch(out, proc_num, out + '/illegal',
-                                  sim_input, data, iNum)
+                # debug_print('[DifuzzRTL] Memory access outside DRAM -- {}'. \
+                #             format(iNum), debug, True)
+                # if record:
+                #     save_mismatch(out, proc_num, out + '/illegal',
+                #                   sim_input, data, iNum)
                 iNum += 1
 
             if not match or ret not in [SUCCESS, ILL_MEM]:
@@ -160,13 +160,15 @@ def Run(dut, toplevel,
             if end_cnt != -1:
                 ass_end.append(bug_fd_lines[i])
             
-        print(start_cnt,end_cnt)
+        #print(start_cnt,end_cnt)
         assembly = []
         word_cnt = 0
         for i in range(end_cnt-start_cnt+1):
             #todo: use ERfen
-            assemb = bug_fd_lines[start_cnt:start_cnt+i]
+            assemb = bug_fd_lines[start_cnt:start_cnt+i+1]
+            line_cnt = 0
             for asss in assemb:
+                
                 if asss.startswith("_l"):
                     t = asss.find(':')
                     #print('t is at:{}'.format(t))
@@ -176,17 +178,19 @@ def Run(dut, toplevel,
                     ass_list = asss[2:].split(', ')
                     for asl in ass_list:
                         if asl.startswith("_l"):
-                            word_L_cnt = eval(asl[2:])
+                            word_L_cnt = eval(asl[2:5])
+                            print("!!!",word_L_cnt,word_cnt)
                             if word_L_cnt > word_cnt:
-                                asss = "\t\t\tnop"
+                                assemb[line_cnt] = "\t\t\tnop"
+                line_cnt += 1
             assembly = ass + assemb + ass_end
-            fd = open('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i),'w')
-            print('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i))
+            fd = open('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_debug_si/bug_{}.si'.format(i),'w')
+            print('/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_debug_si/bug_{}.si'.format(i))
             for j in range(len(assembly)):
                 fd.write(assembly[j])
             fd.close()
 
-            in_file = '/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_find_bug/bug_{}.si'.format(i)
+            in_file = '/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_debug_si/bug_{}.si'.format(i)
             if in_file: (sim_input, data, assert_intr) = mutator.read_siminput(in_file)
             else: (sim_input, data) = mutator.get(assert_intr)
 
@@ -218,8 +222,8 @@ def Run(dut, toplevel,
                     match = checker.check(symbols)
                 elif ret == ILL_MEM:
                     match = True
-                    debug_print('[DifuzzRTL] Memory access outside DRAM -- {}'. \
-                                format(iNum), debug, True)
+                    #debug_print('[DifuzzRTL] Memory access outside DRAM -- {}'. \
+                    #            format(iNum), debug, True)
                     if record:
                         save_mismatch(out, proc_num, out + '/illegal',
                                     sim_input, data, iNum)

@@ -25,7 +25,10 @@ class rvISAhost():
         else: intr = []
 
         args = [ self.spike ] + self.spike_args + intr + \
-            [ '+signature={}'.format(self.isa_sigfile), binary ]
-
+            ['+signature={}'.format(self.isa_sigfile), binary ]
+        '''
+        ['/home/host/difuzz-rtl/Fuzzer/ISASim/riscv-isa-sim/build/spike', 
+        '+signature=outdir/.isa_sig_0.txt', 'outdir/.input_0.elf']
+        '''
         self.debug_print('[ISAHost] Start ISA simulation')
         return subprocess.call(args)

@@ -1,5 +1,6 @@
 import os
 import random
+import load_poc
 from copy import deepcopy
 
 from inst_generator import Word, rvInstGenerator, PREFIX, MAIN, SUFFIX
@@ -101,10 +102,10 @@ class rvMutator():
         self.phase = GENERATION
 
         self.num_prefix = 3
-        self.num_words = 100
+        self.num_words = 50
         self.num_suffix = 5
 
-        self.max_nWords = 200
+        self.max_nWords = 100
         self.no_guide = no_guide
 
         self.max_data = max_data_seeds
@@ -233,7 +234,7 @@ class rvMutator():
         data_seed = self.add_data(data)
         sim_input = simInput(prefix, words, suffix, ints, data_seed, template)
         data = self.random_data[data_seed]
-
+        #print(len(ints),"len_ints")
         assert_intr = False
         if [ i for i in ints if i != 0 ]:
             assert_intr = True
@@ -420,6 +421,11 @@ class rvMutator():
         for word in words:
             i_len += word.len_insts
             self.inst_generator.populate_word(word, max_label, MAIN)
+        words[-1].ret_insts.append('{:8}{:<48}'.format('', 'j test_end'))
+        i_len += 1
+        i_len -= words[0].len_insts
+        words = load_poc.add_poc_words(words)
+        i_len += words[0].len_insts
 
         for word in suffix:
             self.inst_generator.populate_word(word, len(suffix), SUFFIX)

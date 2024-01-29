@@ -96,7 +96,8 @@ def setup(dut, toplevel, template, out, proc_num, debug, minimizing=False, no_gu
     elf2hex = 'riscv64-unknown-elf-elf2hex'
     preprocessor = rvPreProcessor(cc, elf2hex, template, out, proc_num)
 
-    spike = os.environ['SPIKE']
+    #spike = os.environ['SPIKE']
+    spike = '/home/host/difuzz-rtl/Fuzzer/ISASim/riscv-isa-sim_old/build/spike'
     isa_sigfile = out + '/.isa_sig_{}.txt'.format(proc_num)
     rtl_sigfile = out + '/.rtl_sig_{}.txt'.format(proc_num)
 

@@ -74,10 +74,11 @@ class rvPreProcessor():
                                    '{}/include/v/string.c'.format(self.template),
                                    '{}/include/v/vm.c'.format(self.template) ]
         if in_file:
-            si_name = self.base + '/si' + '/.input_in_file.si'
+            si_name = self.base + '/asm_debug_si' + '/.input_in_file.si'
+            asm_name = self.base + '/asm_debug' + '/.input_{}.S'.format(num_iter)
         else:
-            si_name = self.base + '/si' + '/.input_{}.si'.format(num_iter)
-        asm_name = self.base + '/asm_find_bug' + '/.input_{}.S'.format(num_iter)
+            si_name = self.base + '/asm_find_bug_si' + '/.input_{}.si'.format(num_iter)
+            asm_name = self.base + '/asm_find_bug' + '/.input_{}.S'.format(num_iter)
         asm_name_org = self.base + '/.input_{}.S'.format(self.proc_num)
         elf_name = self.base + '/.input_{}.elf'.format(self.proc_num)
         hex_name = self.base + '/.input_{}.hex'.format(self.proc_num)
@@ -89,8 +90,10 @@ class rvPreProcessor():
         insts = sim_input.get_insts()
         suffix_insts = sim_input.get_suffix()
         sim_input_ints = sim_input.ints.copy()
-
+        print(len(sim_input_ints),"*",len(insts))
         ints = []
+        for inst in insts:
+            print(inst)
         for inst in insts[:-1]:
             INT = sim_input_ints.pop(0)
             if 'la' in inst:
@@ -152,7 +155,25 @@ class rvPreProcessor():
         #input insts in test_template end
         cc_args = self.cc_args + extra_args + [ asm_name, '-o', elf_name ]
 
+        # cc_args += ['-I../test-suit/env', '-I../test-suit/common'
+        # ,'-mno-relax', '-fno-common', '-fno-builtin-printf','-DENTROPY=0xcae9e378','-DPREALLOCATE=1','-Os', '-g',
+        # '../test-suit/common/syscalls.c','../test-suit/common/crt.S', '-lm', '-lgcc', '-T' '../test-suit/common/test.ld']
+
+        '''
+        ['riscv64-unknown-elf-gcc', '-march=rv64g', '-mabi=lp64', '-static', '-mcmodel=medany', 
+        '-fvisibility=hidden', '-nostdlib', '-nostartfiles', '-I', 'Template/include', 
+        '-T', 'Template/include/link.ld', '-DENTROPY=0xcae9e378', '-std=gnu99', '-O2', 
+        '-I', 'Template/include/v', 'Template/include/v/string.c',
+        'Template/include/v/vm.c', 'outdir/asm_find_bug/.input_0.S', '-o', 'outdir/.input_0.elf']
+        '''
         cc_ret = -1
+
+        # fs_cc_args = ['riscv64-unknown-elf-gcc', '-I.', '-I./../env', '-I./../common' 
+        # '-DPREALLOCATE=1' '-mcmodel=medany' '-static' '-std=gnu99' 
+        # '-Os' '-g' '-fno-common' '-fno-builtin-printf' 'flush_reload.c'
+        # '-S'   './../common/syscalls.c' './../common/crt.S'
+        # '-static' '-nostdlib' '-nostartfiles' '-lm' '-lgcc' '-T' './../common/test.ld']
+
         while True:
             cc_ret = subprocess.call(cc_args)
             # if cc_ret == -9: cc process is killed by OS due to memory usage
@@ -163,6 +184,11 @@ class rvPreProcessor():
 
             elf2hex_args = self.elf2hex_args + [ elf_name, '--output', hex_name]
             subprocess.call(elf2hex_args)
+            #print(elf2hex_args,"&&")
+            '''
+            ['riscv64-unknown-elf-elf2hex', '--bit-width', '64',
+            '--input', 'outdir/.input_0.elf', '--output', 'outdir/.input_0.hex']
+            '''
             symbols= self.get_symbols(elf_name, sym_name)
 
             if intr:

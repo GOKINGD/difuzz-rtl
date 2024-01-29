@@ -28,10 +28,18 @@ INIT_FREGS
         ret
         .align;
 trap_stvec:
-        clear_sie;
-        ecall
+        csrr a0,sepc;
+        addi a0,a0,0x4;
+        csrw sepc,a0;
+        sret;
 trap_mtvec: 
-        clear_mie;
+        
+        csrr a0,mepc;
+        addi a0,a0,0x4;
+        csrw mepc,a0;
+        mret;
+test_end:
+  clear_mie;
   DUMP_REGS
 
   write_tohost:
@@ -83,6 +91,7 @@ _fuzz_main:
         /* Fuzz main */
         /**/
 // RVTEST_CODE_END
+        j test_end;
         ecall
         unimp
 _end_main:
@@ -94,7 +103,7 @@ _end_main:
         unimp
         unimp
         unimp
-        
+        j test_end;
     .data
 
 RVTEST_DATA_BEGIN

@@ -725,9 +725,10 @@ class tlAdapter():
                 mask = (1 << self.b_datalen) - 1
                 size = int(math.log(self.block_size, 2))
 
-                assert block_addr in block_perm.keys(), \
-                    '{:016x} not in block_perm.keys()'.format(block_addr)
-
+                # assert block_addr in block_perm.keys(), \
+                #     '{:016x} not in block_perm.keys()'.format(block_addr)
+                if block_addr not in block_perm.keys():
+                    block_perm[block_addr] = TIP
                 if block_perm[block_addr] != TIP:
                     callback = CallBack(self.enableProbe)
                     self.retrieveBlock(b_srcs, b_callback, callback, toN, size, \

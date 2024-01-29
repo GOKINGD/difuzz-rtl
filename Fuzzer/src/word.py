@@ -67,10 +67,11 @@ class Word():
 
         ret_insts = [ '{:<8}{:<42}'.format(part + str(self.label) + ':',
                                            pop_insts.pop(0)) ]
-        
+        # if part == MAIN and len(pop_insts) == 0:
+        #     ret_insts.append('{:8}{:<42}'.format('', 'j test_end'))
+        #     self.len_insts += 1
         for i in range(len(pop_insts)):
             ret_insts.append('{:8}{:<42}'.format('', pop_insts.pop(0)))
-            
         self.populated = True
         self.ret_insts = ret_insts
 

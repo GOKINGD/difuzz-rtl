@@ -195,7 +195,7 @@ class rvInstGenerator():
             imms_list.append(imms)
             symbols_list.append(symbols)
         if part == MAIN:
-            cnt = 30 - len(insts)
+            cnt = 10 - len(insts)
             while cnt > 0:
                 flag = 0
                 opcode = random.choice(self.opcodes)
