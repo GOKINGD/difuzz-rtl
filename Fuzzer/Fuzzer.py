@@ -13,7 +13,8 @@ def Run(dut, toplevel,
         num_iter=1, template='Template', in_file=None,
         out='output', record=False, cov_log=None,
         multicore=0, manager=None, proc_num=0, start_time=0, start_iter=0, start_cov=0,
-        prob_intr=0, no_guide=False, debug=False, find_bug=False):
+        prob_intr=0, no_guide=False, debug=False, find_bug=False,
+        ADD_ANTLR4=False,ADD_CONTROL=False,ADD_POC=False):
 
     assert toplevel in ['RocketTile', 'BoomTile' ], \
         '{} is not toplevel'.format(toplevel)
@@ -48,9 +49,9 @@ def Run(dut, toplevel,
         assert_intr = False
         if random.random() < prob_intr:
             assert_intr = True
-
+        dir = '/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base
         if in_file: (sim_input, data, assert_intr) = mutator.read_siminput(in_file)
-        else: (sim_input, data) = mutator.get(assert_intr)
+        else: (sim_input, data) = mutator.get(dir, it, ADD_POC, ADD_CONTROL,ADD_ANTLR4,assert_intr = assert_intr)
 
         if debug:
             print('[DifuzzRTL] Fuzz Instructions')
@@ -192,7 +193,7 @@ def Run(dut, toplevel,
 
             in_file = '/home/host/difuzz-rtl/Fuzzer/'+preprocessor.base+'/asm_debug_si/bug_{}.si'.format(i)
             if in_file: (sim_input, data, assert_intr) = mutator.read_siminput(in_file)
-            else: (sim_input, data) = mutator.get(assert_intr)
+            else: (sim_input, data) = mutator.get(ADD_POC, ADD_CONTROL, ADD_ANTLR4, assert_intr=assert_intr)
 
             (isa_input, rtl_input, symbols) = preprocessor.process(sim_input, data, assert_intr, num_iter = i, in_file = True)
 

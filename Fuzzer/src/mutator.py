@@ -1,6 +1,7 @@
 import os
 import random
 import load_poc
+import add_control
 from copy import deepcopy
 
 from inst_generator import Word, rvInstGenerator, PREFIX, MAIN, SUFFIX
@@ -362,7 +363,7 @@ class rvMutator():
 
         return words
 
-    def get(self, assert_intr=False):
+    def get(self, dir, it, ADD_POC=False, ADD_CONTROL=False,ADD_ANTLR4=False,assert_intr=False):
         i_len = 0
         prefix = []
         words = []
@@ -421,11 +422,15 @@ class rvMutator():
         for word in words:
             i_len += word.len_insts
             self.inst_generator.populate_word(word, max_label, MAIN)
-        words[-1].ret_insts.append('{:8}{:<48}'.format('', 'j test_end'))
-        i_len += 1
-        i_len -= words[0].len_insts
-        words = load_poc.add_poc_words(words)
-        i_len += words[0].len_insts
+        # words[-1].ret_insts.append('{:8}{:<48}'.format('', 'j test_end'))
+        # i_len += 1
+        if ADD_POC:
+            words,i_len,word_num_poc = load_poc.add_poc_words(words,i_len)
+
+        if ADD_CONTROL:
+            dir = dir + "/maze/"
+            words,i_lens = add_control.add_control(dir,words,it)
+            i_len += i_lens
 
         for word in suffix:
             self.inst_generator.populate_word(word, len(suffix), SUFFIX)

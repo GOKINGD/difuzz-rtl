@@ -62,7 +62,7 @@ INIT_XREGS
   csrs mstatus, a0
   call init_freg
   la a0, userstart
-  j vm_boot
+  j _fuzz_prefix
 
 init_freg:
 INIT_FREGS

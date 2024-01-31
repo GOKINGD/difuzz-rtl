@@ -2,6 +2,7 @@ import os
 import subprocess
 import shutil
 import random
+import load_poc
 
 from ISASim.host import isaInput
 from RTLSim.host import rtlInput
@@ -90,12 +91,13 @@ class rvPreProcessor():
         insts = sim_input.get_insts()
         suffix_insts = sim_input.get_suffix()
         sim_input_ints = sim_input.ints.copy()
-        print(len(sim_input_ints),"*",len(insts))
+
         ints = []
-        for inst in insts:
-            print(inst)
         for inst in insts[:-1]:
-            INT = sim_input_ints.pop(0)
+            if len(sim_input_ints) == 0:
+                INT = 0
+            else:
+                INT = sim_input_ints.pop(0)
             if 'la' in inst:
                 ints.append(INT)
                 ints.append(0)
@@ -168,17 +170,21 @@ class rvPreProcessor():
         '''
         cc_ret = -1
 
-        # fs_cc_args = ['riscv64-unknown-elf-gcc', '-I.', '-I./../env', '-I./../common' 
-        # '-DPREALLOCATE=1' '-mcmodel=medany' '-static' '-std=gnu99' 
-        # '-Os' '-g' '-fno-common' '-fno-builtin-printf' 'flush_reload.c'
-        # '-S'   './../common/syscalls.c' './../common/crt.S'
-        # '-static' '-nostdlib' '-nostartfiles' '-lm' '-lgcc' '-T' './../common/test.ld']
+        fs_cc_args = ['riscv64-unknown-elf-gcc','-I../test-suit/env', '-I../test-suit/common',
+        '-DPREALLOCATE=1', '-mcmodel=medany', '-static' ,'-std=gnu99','-I../test-suit/flush_reload/.',
+        '-Os', '-g', '-fno-common', '-fno-builtin-printf' ,'../test-suit/flush_reload/flush_reload.c',
+        '../test-suit/common/syscalls.c', '../test-suit/common/crt.S',
+        '-I', 'Template/include',
+        '-static', '-nostdlib', '-nostartfiles', '-lm', '-lgcc', '-T', '../test-suit/common/test.ld'] + ['-o',elf_name]
+        # subprocess.call(fs_cc_args)
+
 
         while True:
             cc_ret = subprocess.call(cc_args)
             # if cc_ret == -9: cc process is killed by OS due to memory usage
             if cc_ret != -9: break
 
+        
         if cc_ret == 0:
             subprocess.call(cc_args)
 

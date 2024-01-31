@@ -12,7 +12,7 @@
 
 RVTEST_RV64UF
 .section .data
-counter: .word 10
+counter: .word 5
 // RVTEST_CODE_BEGIN
         .section .text.init;
         .align  6;
@@ -29,23 +29,23 @@ INIT_FREGS
         ret
         .align;
 trap_stvec:
-        lw t0, (counter);
-        li a0,1;  
-        sub t1, t0, a0;   
-        la a2,counter   
-        sw t1,(a2);
-        beqz t1,test_end;
+        #lw t0, (counter);
+        #li a0,1;  
+        #sub t1, t0, a0;   
+        #la a2,counter   
+        #sw t1,(a2);
+        #beqz t1,test_end;
         csrr a0,sepc;
         addi a0,a0,0x4;
         csrw sepc,a0;
         sret;
 trap_mtvec: 
-        lw t0, (counter);
-        li a0,1;  
-        sub t1, t0, a0;   
-        la a2,counter   
-        sw t1,(a2);
-        beqz t1,test_end;
+        #lw t0, (counter);
+        #li a0,1;  
+        #sub t1, t0, a0;   
+        #la a2,counter   
+        #sw t1,(a2);
+        #beqz t1,test_end;
         csrr a0,mepc;
         addi a0,a0,0x4;
         csrw mepc,a0;
